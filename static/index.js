@@ -6,14 +6,13 @@ const websocket = new WebSocket(wsUri);
 let actualIndex = 0;
 let maxIndex = 0;
 let app = "";
+let previousIndex = 0;
 
 let receivedData;
 const outputElement = document.getElementById("output");
 
-// Nasłuch na event zamknięcia
 window.addEventListener('closeWindow', () => {
     console.log('Closing window...');
-    // Symuluj Escape
     const escapeEvent = new KeyboardEvent('keydown', {
         key: 'Escape',
         keyCode: 27,
@@ -23,14 +22,45 @@ window.addEventListener('closeWindow', () => {
     window.dispatchEvent(escapeEvent);
 });
 
+const animateBackgroundSlide = () => {
+    const ul = document.querySelector('ul');
+    const listItems = document.querySelectorAll('li');
+    
+    listItems.forEach((li, index) => {
+        if (index === actualIndex) {
+            li.classList.add('active');
+        } else {
+            li.classList.remove('active');
+        }
+    });
+
+    if (listItems[actualIndex] && ul) {
+        const activeItem = listItems[actualIndex];
+        const topOffset = activeItem.offsetTop;
+        const height = activeItem.offsetHeight;
+        
+        ul.style.setProperty('--background-y', topOffset + 'px');
+        ul.style.setProperty('--background-height', height + 'px');
+        
+        ul.classList.remove('animating');
+        setTimeout(() => {
+            ul.classList.add('animating');
+        }, 10);
+    }
+};
+
 const write = () => {
     let outputData = "<ul>";
     if (Array.isArray(receivedData)) {
         for (let i = 0; i < receivedData.length; i++) {
-            outputData += `<li class="${i === actualIndex ? 'active' : ''}">${receivedData[i]}</li>`;
+            outputData += `<li>${receivedData[i]}</li>`;
         }
         outputData += "</ul>";
         outputElement.innerHTML = outputData;
+        
+        setTimeout(() => {
+            animateBackgroundSlide();
+        }, 0);
         return;
     }
     else {
@@ -75,7 +105,7 @@ inputField.addEventListener("keydown", (event) => {
 
     app = receivedData[actualIndex]
 
-    write();
+    animateBackgroundSlide();
 });
 
 inputField.addEventListener("input", async (event) => {
