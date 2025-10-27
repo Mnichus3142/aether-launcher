@@ -1,0 +1,48 @@
+:root {
+    --background-color: rgba(13, 9, 10, 0.6);
+    --text-color: rgba(234, 242, 239, 0.8);
+
+    --shadow: 0 0 2px rgba(12, 14, 13, 0.8);
+}
+
+* {
+	font-family: "JetBrains Mono";
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input {
+	border: none;
+	outline: none;
+
+	background-color: transparent;
+	color: var(--text-color);
+}
+
+.content {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    box-shadow: var(--shadow);
+
+    border-radius: 20px;
+
+    height: fit-content;
+    width: 400px;
+
+	padding: 10px;
+}
+
+.active {
+	background-color: white;
+}

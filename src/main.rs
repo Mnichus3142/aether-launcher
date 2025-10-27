@@ -209,6 +209,30 @@ fn build_bar(app: &Application) -> ApplicationWindow {
                     None::<&gtk4::gio::Cancellable>,
                     |_| {},
                 );
+                
+                let close_listener_js = r#"
+                window.__closeEventHandler = null;
+                if (!window.__closeListenerAdded) {
+                    window.__closeListenerAdded = true;
+                    window.addEventListener('closeWindow', () => {
+                        console.log('Close event triggered from Rust');
+                        const escapeEvent = new KeyboardEvent('keydown', {
+                            key: 'Escape',
+                            keyCode: 27,
+                            code: 'Escape',
+                            bubbles: true
+                        });
+                        window.dispatchEvent(escapeEvent);
+                    });
+                }
+                "#;
+                wv.evaluate_javascript(
+                    close_listener_js,
+                    None::<&str>,
+                    None::<&str>,
+                    None::<&gtk4::gio::Cancellable>,
+                    |_| {},
+                );
             }
         });
     }
@@ -233,6 +257,30 @@ fn build_bar(app: &Application) -> ApplicationWindow {
     });
     
     win.add_controller(key_controller);
+    
+    let win_clone = win.clone();
+    let webview_clone = webview.clone();
+    glib::timeout_add_local(std::time::Duration::from_millis(100), move || {
+        let webview = webview_clone.clone();
+        let win = win_clone.clone();
+        
+        webview.evaluate_javascript(
+            r#"window.__lastTitle = document.title; window.__lastTitle;"#,
+            None::<&str>,
+            None::<&str>,
+            None::<&gtk4::gio::Cancellable>,
+            move |result| {
+                if let Ok(value) = result {
+                    let title_str = value.to_string();
+                    if title_str.contains("CLOSE_WINDOW_SIGNAL") {
+                        eprintln!("[Aether] Close signal detected: {}", title_str);
+                        win.close();
+                    }
+                }
+            },
+        );
+        glib::ControlFlow::Continue
+    });
 
     win
 }
