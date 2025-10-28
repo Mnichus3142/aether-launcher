@@ -40,7 +40,11 @@ html, body {
 body {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    height: 80vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 input {
@@ -49,10 +53,23 @@ input {
 
 	background-color: transparent;
 	color: var(--text-color);
+	width: 100%;
+	text-align: center;
+	flex-shrink: 0;
+	
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	padding: 8px 0;
 }
 
 #output:empty {
 	display: none;
+}
+
+#output {
+	overflow-y: auto;
+	flex: 1;
 }
 
 .content {
@@ -62,10 +79,15 @@ input {
 
     border-radius: 20px;
 
-    height: fit-content;
+    height: auto;
     width: 400px;
+    max-height: calc(80vh - 60px);
+
+	margin-top: 25%;
 
 	padding: 10px;
+	display: flex;
+	flex-direction: column;
 	overflow: hidden;
 }
 
@@ -97,6 +119,10 @@ ul::before {
 	transition: top 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55), height 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55), box-shadow 0.25s ease-out;
 }
 
+ul.no-transition::before {
+	transition: none !important;
+}
+
 li {
 	position: relative;
 	list-style: none;
@@ -112,4 +138,9 @@ li {
 li.active {
 	color: rgba(13, 9, 10, 0.9);
 	font-weight: 500;
+}
+
+#output {
+	overflow-y: auto;
+	flex: 1;
 }
